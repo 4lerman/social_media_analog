@@ -67,24 +67,58 @@ export class PostService {
     });
   }
 
-  async giveLike(postId: number) {
-    const post = await this.prisma.post.findUnique({
+  async giveLike(userId: number, postId: number) {
+    const like = await this.prisma.like.findUnique({
       where: {
-        id: postId,
-      },
-    });
-
-    if (!post) throw new ForbiddenException('Source cannot be found!');
-
-    return this.prisma.post.update({
-      where: {
-        id: postId,
-      },
-      data: {
-        likes: {
-          increment: 1,
+        userId_postId: {
+          userId,
+          postId,
         },
       },
     });
+
+    if (!like) {
+      await this.prisma.like.create({
+        data: {
+          userId,
+          postId,
+        },
+      });
+
+      await this.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likes: {
+            increment: 1,
+          },
+        },
+      });
+
+      return { addedLike: true };
+    } else {
+      await this.prisma.like.delete({
+        where: {
+          userId_postId: {
+            userId,
+            postId,
+          },
+        },
+      });
+
+      await this.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likes: {
+            decrement: 1,
+          },
+        },
+      });
+
+      return { addedLike: false };
+    }
   }
 }

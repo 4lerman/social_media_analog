@@ -20,6 +20,7 @@ model User {
   secondName String?
   Post       Post[]
   Comment    Comment[]
+  Like       Like[]
 }
 
 model Post {
@@ -31,7 +32,8 @@ model Post {
   likes       Int       @default(0)
   comments    Comment[]
   userId      Int
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Like        Like[]
 }
 
 model Comment {
@@ -43,4 +45,17 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id])
   Post      Post?    @relation(fields: [postId], references: [id])
   postId    Int?
+}
+
+model Like {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  postId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([userId])
+  @@index([postId])
 }

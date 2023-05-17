@@ -39,8 +39,11 @@ export class PostController {
   }
 
   @Post(':id')
-  giveLike(@Param('id', ParseIntPipe) postId: number) {
-    return this.postService.giveLike(postId);
+  giveLike(
+    @GetUser('id') userId: number,
+    @Param('id', ParseIntPipe) postId: number,
+  ) {
+    return this.postService.giveLike(userId, postId);
   }
 
   @Patch(':id')
