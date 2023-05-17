@@ -92,7 +92,7 @@ export class PostController {
     return this.postService.deletePost(userId, postId);
   }
 
-  @Delete(':id/comment')
+  @Delete(':id/comments')
   deleteComment(
     @GetUser('id') userId: number,
     @Param('id', ParseIntPipe) postId: number,
