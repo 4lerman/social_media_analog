@@ -8,7 +8,11 @@ export class PostService {
   constructor(private prisma: PrismaService) {}
 
   getPosts() {
-    return this.prisma.post.findMany();
+    return this.prisma.post.findMany({
+      include: {
+        comments: true,
+      },
+    });
   }
 
   getPostById(userId: number, postId: number) {
@@ -16,6 +20,9 @@ export class PostService {
       where: {
         id: postId,
         userId,
+      },
+      include: {
+        comments: true,
       },
     });
   }
